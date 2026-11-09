@@ -1,4 +1,5 @@
 import logging
+import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
@@ -18,11 +19,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запуск бота"""
-    # Замените YOUR_BOT_TOKEN на ваш токен бота
-    TOKEN = 'YOUR_BOT_TOKEN'
+    # Получаем токен из переменных окружения
+    token = os.environ.get('BOT_TOKEN')
     
-    # Создаем приложение
-    app = ApplicationBuilder().token(TOKEN).build()
+    if not token:
+        logger.error("BOT_TOKEN не найден в переменных окружения!")
+        logger.error("Пожалуйста, добавьте BOT_TOKEN в Render как переменную окружения")
+        return
+    
+    # Создаем приложение (в новой версии библиотеки это возвращает Application, а не Updater)
+    app = ApplicationBuilder().token(token).build()
     
     # Добавляем обработчик команды /start
     app.add_handler(CommandHandler("start", start))
